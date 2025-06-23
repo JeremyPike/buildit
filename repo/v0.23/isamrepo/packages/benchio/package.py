@@ -9,10 +9,9 @@ class Benchio(Package):
     phases = ['build', 'install']
 
     homepage = "https://github.com/davidhenty/benchio"
-    git = "https://github.com/JeremyPike/benchio.git"
+    git = "https://github.com/davidhenty/benchio.git"
 
-    #Track the isambard3 branch
-    version("isambard3", branch="isambard3")
+    version("master", branch="master")
 
     depends_on('mpi')
     depends_on("hdf5+mpi+fortran")
@@ -28,14 +27,13 @@ class Benchio(Package):
 
         adios2_fortran_flags = subprocess.getoutput("adios2-config --fortran-flags")
         adios2_fortran_libs = subprocess.getoutput("adios2-config --fortran-libs")
-        # Construct FFLAGS
+
         fflags = (
                 "-O3 "
                 "-mcpu=neoverse-v2 "
                 f"{adios2_fortran_flags}"
                 )
 
-        # Construct LFLAGS
         lflags = (
                 "-lnetcdff -lnetcdf -lhdf5_fortran -lhdf5 "
                 f"{adios2_fortran_libs}"
@@ -47,7 +45,7 @@ class Benchio(Package):
         return targetlist
 
     def build(self, spec, prefix):
-        make(*self.build_targets)
+        make('-f', 'Makefile-archer2', *self.build_targets)
 
     def install(self, spec, prefix):
         # No install needed, just copy the executable to prefix.bin
